@@ -1,0 +1,27 @@
+::ng-deep .tieredmenu-horizontal .p-tieredmenu-root-list {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 1rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+::ng-deep .tieredmenu-horizontal .p-menuitem {
+    margin: 0 1rem;
+    list-style: none;
+}
+
+::ng-deep .tieredmenu-horizontal .p-menuitem-link {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+::ng-deep .tieredmenu-horizontal .p-menuitem-link:hover,
+::ng-deep .tieredmenu-horizontal .p-menuitem-link:focus {
+    background-color: var(--surface-hover);
+    color: var(--primary-color);
+}
+  

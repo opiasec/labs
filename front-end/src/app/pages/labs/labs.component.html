@@ -1,0 +1,126 @@
+<div class="flex mt-2">
+
+    <p-table class="table" #dt2 [value]="labs" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+        [paginator]="true"
+        [globalFilterFields]="['title', 'description', 'difficulty', 'vulnerabilities.name', 'languages.name', 'technologies.name', 'estimatedTime']"
+        [tableStyle]="{ 'min-width': '70rem', 'width' : '100%' }">
+        <ng-template #caption>
+            <div class="flex">
+                <h2 class="m-0">Labs</h2>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input #searchInput pInputText type="text" (input)="dt2.filterGlobal(searchInput.value, 'contains')"
+                        placeholder="Search keyword" />
+                </p-iconfield>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th style="width:12%">Title</th>
+                <th style="width:20%">Description</th>
+                <th style="width:8%">Difficulty</th>
+                <th style="width:18%">Vulnerabilities</th>
+                <th style="width:15%">Languages</th>
+                <th style="width:15%">Technologies</th>
+                <th style="width:10%">Est. Time</th>
+                <th style="width:12%">Action</th>
+            </tr>
+            <tr>
+                <th>
+                    <p-columnFilter type="text" field="title" matchMode="contains" [showMenu]="false"
+                        placeholder="Search by title" ariaLabel="Filter Title"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="text" field="description" matchMode="contains" [showMenu]="false"
+                        placeholder="Search by description" ariaLabel="Filter Description"></p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter field="difficulty" matchMode="equals" [showMenu]="false">
+                        <ng-template #filter let-value let-filter="filterCallback">
+                            <p-select [ngModel]="value" (ngModelChange)="filter($event)" [options]="difficultyOptions"
+                                placeholder="Select Difficulty" optionLabel="name" optionValue="name" [showClear]="true"
+                                [style]="{'min-width': '10rem'}">
+                            </p-select>
+                        </ng-template>
+                    </p-columnFilter>
+                    <!-- Vulnerabilities -->
+                <th>
+                    <p-columnFilter field="vulnerabilities" [showMenu]="false" matchMode="vulnerabilityContains"
+                        placeholder="Search vulnerabilities">
+                    </p-columnFilter>
+                </th>
+
+                <!-- Languages -->
+                <th>
+                    <p-columnFilter field="languages" matchMode="languageContains" [showMenu]="false"
+                        placeholder="Search languages">
+                    </p-columnFilter>
+                </th>
+
+                <!-- Technologies -->
+                <th>
+                    <p-columnFilter field="technologies" matchMode="technologyContains" [showMenu]="false"
+                        placeholder="Search technologies">
+                    </p-columnFilter>
+                </th>
+                <th>
+                    <p-columnFilter type="numeric" field="estimatedTime" display="menu"
+                        placeholder="Search by estimated time" ariaLabel="Filter Estimated Time"></p-columnFilter>
+                </th>
+                <th>
+                    <!-- Actions column - no filter needed -->
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-lab>
+            <tr>
+                <td>
+                    {{ lab.title }}
+                </td>
+                <td>
+                    <div class="">
+                        <span>{{ lab.description }}</span>
+                    </div>
+                </td>
+                <td>
+                    <p-tag [value]="lab.difficulty" [severity]="getSeverity(lab.difficulty)" />
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let vuln of lab.vulnerabilities">
+                            <p-tag [value]="vuln.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let lang of lab.languages">
+                            <p-tag [value]="lang.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let tech of lab.technologies">
+                            <p-tag [value]="tech.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>
+                    <p-tag [value]="lab.estimatedTime" severity="secondary"></p-tag>
+                </td>
+                <td>
+                    <p-button label="Start" (click)="startLab(lab.slug)"></p-button>
+                </td>
+
+            </tr>
+        </ng-template>
+        <ng-template #emptymessage>
+            <tr>
+                <td style="width: 20px;" colspan="8">No labs found.</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>

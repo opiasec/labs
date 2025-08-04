@@ -1,0 +1,4 @@
+node_modules
+.env
+ubuntu@*
+kubeconfig.b64

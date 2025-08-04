@@ -1,0 +1,9 @@
+target_registry: registry.registry.svc.cluster.local:5000
+images:
+  - node:18
+  - alpine:3.21.3
+  - redis:7
+  - mariadb:10.6.3
+  - golang:1.14
+  - docker:dind
+  - semgrep/semgrep:latest

@@ -1,0 +1,33 @@
+<div class="dashboard-container ml-3 mr-3 max-w-full">
+    <!-- Header -->
+    <div class="flex flex-column mb-4">
+        <h2 class="flex">Dashboard</h2>
+    </div>
+
+
+    <div class="flex flex-column gap-5">
+        <div class="flex justify-content-between flex-wrap ml-5 mr-5">
+            <app-simple-card title="Available Labs" [details]="dashboardData?.availableLabs" icon="pi pi-th-large">
+            </app-simple-card>
+            <app-simple-card title="Labs Completed" [details]="dashboardData?.completedLabs" icon="pi pi-check-square">
+            </app-simple-card>
+            <app-simple-card title="Total Attempts" [details]="dashboardData?.totalAttemptsLabs" icon="pi pi-clone">
+            </app-simple-card>
+            <app-simple-card title="Labs On Review" [details]="dashboardData?.onReviewLabs" icon="pi pi-clipboard">
+            </app-simple-card>
+            <app-simple-card title="Average Score" [details]="dashboardData?.averageScore" icon="pi pi-book">
+            </app-simple-card>
+        </div>
+        <div class="flex ml-5 mr-5 gap-5">
+            <p-card class="w-6" >
+                <p>Weekly Activity</p>
+                <p-chart height="500" type="bar" [data]="weeklyActivityChartData" [options]="weeklyActivityChartOptions"></p-chart>
+            </p-card>
+            <p-card class="w-6">
+                <p>Weekly Score Evolution</p>
+                <p-chart height="500" type="line" [data]="scoreEvolutionChartData" [options]="scoreEvolutionChartOptions"></p-chart>
+            </p-card>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,21 @@
+<p-dialog [(visible)]="visible" [modal]="true" [draggable]="false" [resizable]="false" header="User Profile"
+  [style]="{width: '400px'}" (onHide)="hideDialog()">
+
+  <div class="flex flex-column align-items-center p-4">
+    <p-avatar [image]="user?.picture && user?.picture.trim() !== '' ? user?.picture : undefined"
+      [label]="!user?.picture || user?.picture.trim() === '' ? 'U' : undefined" size="xlarge" class="mr-2" shape="circle" />
+    <h2>{{user?.name}}</h2>
+    <p>{{user?.email}}</p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-center align-items-center w-full">
+
+      <p-button label="Sign Out" icon="pi pi-sign-out" styleClass="p-button-danger p-button-rounded"
+        (onClick)="signOut()">
+      </p-button>
+    </div>
+
+
+  </ng-template>
+</p-dialog>

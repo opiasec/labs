@@ -1,0 +1,8 @@
+/* CSS mínimo - usa o tema dark do PrimeNG */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}

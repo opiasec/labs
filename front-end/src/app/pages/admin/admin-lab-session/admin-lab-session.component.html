@@ -1,0 +1,158 @@
+<div class="mt-2">
+    <div class="card">
+        <div class="flex p-5"
+            style="background-color: var(--p-card-background); border-radius: var(--p-card-border-radius);">
+            <div class="flex-1 flex justify-content-center align-items-stretch gap-2">
+                <div class="flex h-full justify-content-center align-items-end">
+                    <p-avatar label="E" styleClass="mr-2" size="xlarge" />
+                </div>
+                <div class="flex">
+                    <div class="flex flex-column align-items-start justify-content-around">
+                        <span class="text-2xl font-bold">{{labResult?.labSlug}}</span>
+                        <span class="text-sm">Session ID: {{labResult?.namespace}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-1 flex justify-content-center align-items-center">
+                <div class="flex h-full align-items-end">
+                    <div class="flex flex-column align-items-center">
+                        <span style="font-size: 3rem;">{{labResult?.finishResult?.totalScore}}</span>
+                        <span>Score</span>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="flex-1 flex justify-content-center align-items-center">
+                <div class="flex h-full align-items-center">
+                    <div class="flex flex-column align-items-center justify-content-center">
+                        <p-tag [value]="labResult.status" [severity]="utilsService.getStatusSeverity(labResult.status)" />
+
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="div mt-2">
+            <p-tabs value="info">
+                <p-tablist>
+                    <p-tab value="info">Info</p-tab>
+                    <p-tab value="files">Files</p-tab>
+                    <p-tab value="review">Review</p-tab>
+                    <p-tab value="logs">Logs</p-tab>
+                </p-tablist>
+                <p-tabpanel value="info">
+                    <div class="flex flex-row gap-2 m-2">
+                        <p-card class="flex">
+                            <div class="flex justify-between gap-8">
+                                <div class="flex flex-column gap-1">
+                                    <span class="text-surface-500 dark:text-surface-400 text-sm">Started at</span>
+                                    <span class="font-bold text-lg">{{labResult?.startedAt | date:'dd/MM/yyyy
+                                        HH:mm'}}</span>
+                                </div>
+                            </div>
+                        </p-card>
+                        <p-card class="flex">
+                            <div class="flex justify-between gap-8">
+                                <div class="flex flex-column gap-1">
+                                    <span class="text-surface-500 dark:text-surface-400 text-sm">Finished at</span>
+                                    <span class="font-bold text-lg">
+                                        {{labResult?.finishedAt && isValidDate(labResult.finishedAt) ?
+                                        (labResult.finishedAt | date:'dd/MM/yyyy HH:mm') : 'N/A'}}
+                                    </span>
+                                </div>
+                            </div>
+                        </p-card>
+                    </div>
+                    <p-table [value]="criteriaResult" stripedRows>
+                        <ng-template #caption>
+                            <div class="flex">
+                                <h2 class="m-0">Criteria Results</h2>
+                            </div>
+                        </ng-template>
+                        <ng-template #header>
+                            <tr>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th style="width:10%">Raw Details</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-criterion>
+                            <tr>
+                                <td>{{criterion.name}}</td>
+                                <td>{{criterion.score}}</td>
+                                <td>{{criterion.status}}</td>
+                                <td class="flex justify-content-start">
+                                    <p-button icon="pi pi-code" (onClick)="onSeeCriterionDetails(criterion)"></p-button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template #emptymessage>
+                            <tr>
+                                <td colspan="4">No evaluations found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+                </p-tabpanel>
+                <p-tabpanel value="files">
+                    <div class="flex flex-column">
+
+                        <app-files-diff-viewer *ngIf="avaliacaoFilesDiff"
+                            [diff]="avaliacaoFilesDiff || ''"></app-files-diff-viewer>
+                    </div>
+                </p-tabpanel>
+                <p-tabpanel value="review">
+                    <div class="flex">
+                        <form [formGroup]="statusChangeForm" (ngSubmit)="onStatusChangeSubmit()"
+                            class="flex flex-column gap-4 w-full mt-2 ml-2 align-items-start">
+                            <div class="flex flex-column gap-1 md:w-2 w-full">
+                                <p-select formControlName="status" [options]="statusOptions" optionLabel="name"
+                                    placeholder="Select a Status" />
+                                <p-message *ngIf="isInvalid('status')" severity="error" size="small"
+                                    variant="simple">Status is required.</p-message>
+                            </div>
+                            <div class="flex">
+                                <p-editor [(ngModel)]="statusComment" formControlName="comment" [style]="{ height: '320px' }" />
+                            </div>
+                            <button pButton severity="secondary" type="submit"><span pButtonLabel>Submit</span></button>
+                        </form>
+                    </div>
+                </p-tabpanel>
+                <p-tabpanel value="logs">
+                    <div class="flex flex-column">
+                        <h2 class="m-2">Lab Session Logs</h2>
+                        <p-table [value]="labSessionLogs" stripedRows>
+                            <ng-template #header>
+                                <tr>
+                                    <th width="30%">Timestamp</th>
+                                    <th width="60%">Message</th>
+                                    <th style="width:10%">Changed By</th>
+                                    <th style="width:10%">From Status</th>
+                                    <th style="width:10%">To Status</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template #body let-log>
+                                <tr>
+                                    <td>{{log.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+                                    <td>{{log.comment}}</td>
+                                    <td>{{log.changedBy}}</td>
+                                    <td>{{log.labTransition.fromStatus.name}}</td>
+                                    <td>{{log.labTransition.toStatus.name}}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template #emptymessage>
+                                <tr>
+                                    <td colspan="2">No logs found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+            </p-tabs>
+        </div>
+    </div>
+</div>

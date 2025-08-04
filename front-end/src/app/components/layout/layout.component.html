@@ -1,0 +1,13 @@
+<div class="flex w-full h-full">
+  <div class="flex h-full">
+    <app-navbar class="h-full"  [style]="{'background-color': 'var(--primary-menubar-bg)'}">
+    </app-navbar>
+  </div>
+  <div class="flex max-h-screen w-full flex-column">
+      <app-topbar>
+      </app-topbar>
+      <div class="flex-auto">
+        <router-outlet />
+      </div>
+  </div>
+</div>

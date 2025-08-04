@@ -1,0 +1,29 @@
+<!-- sensitive-data-display.component.html -->
+<div class="flex align-items-center gap-1">
+    <span class="sensitive-label" style="font-weight: bold; color: var(--primary-color);">
+    Password:
+  </span>
+    <span class="sensitive-label">
+    {{ visible ? value : hiddenValue }}
+  </span>
+
+  <button 
+    pButton 
+    type="button" 
+    class="p-button-text p-button-sm" 
+    (click)="toggleVisibility()" 
+    [pTooltip]="visible ? 'Hide' : 'Show'" 
+    tooltipPosition="top">
+    <i class="pi" [ngClass]="visible ? 'pi-eye-slash' : 'pi-eye'"></i>
+  </button>
+
+  <button 
+    pButton 
+    type="button" 
+    class="p-button-text p-button-sm" 
+    (click)="copy()" 
+    pTooltip="Copy" 
+    tooltipPosition="top">
+    <i class="pi pi-copy"></i>
+  </button>
+</div>

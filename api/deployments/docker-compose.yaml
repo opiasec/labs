@@ -1,0 +1,48 @@
+# Docker compose file for API. Api use Dockerfile and a mongodb 
+
+services:
+  api:
+    platform: linux/amd64
+    build:
+      context: ../
+      dockerfile: deployments/Dockerfile
+    env_file:
+      - ../.env
+    ports:
+      - "8084:8084"
+    environment:
+      - MONGODB_URI=mongodb://admin:admin@mongodb:27017/?authSource=admin
+      - MONGODB_DATABASE=appseclabs
+      - PORT=8084
+      - REDIS_ADDR=redis:6379
+      - LAB_BASE_URL=http://localhost:8082
+    depends_on:
+      mongodb:
+        condition: service_healthy
+  mongodb:
+    image: mongo
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/data/db
+      - ./mongodb/init:/docker-entrypoint-initdb.d
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+
+volumes:
+  db-data:  
+
+networks:
+  default:
+      name: labs-net
+      external: true
+
+

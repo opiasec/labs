@@ -1,0 +1,21 @@
+<p-card class="flex flex-column" [style]="{'background-color': 'var(--primary-menubar-bg)', height: '100px'}">
+    <div class="flex align-items-center justify-content-center text-center" style="height: 40px">
+     <div class="div" style="display: flex; align-items: center; justify-content: center; cursor: pointer;" routerLink="/" (click)="navigateToHome()">
+        <img src="logo.svg" alt="logo" style="width: 40px; height: 40px; background-color: white; border-radius: 10px;"> 
+        <b style="color: white; margin-left: 10px; font-size: 1.2rem; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif ">
+            opiasec Labs
+        </b>
+    </div>
+    </div>
+    <p-divider />
+    <div class="flex">
+        <p-tieredmenu [model]="navBarItems" styleClass="w-full md:w-80 " [style]="{'border' : 'none'}" class="flex h-full flex-grow-1 justify-content-center"/>
+    </div>
+     <div class="flex flex-column mt-5" *ngIf="isUserAdmin()">
+        <p class="flex mb-1">Admin Menu</p>
+        <p-tieredmenu [model]="adminNavBarItems" visible="false" styleClass="w-full md:w-80 " [style]="{'border' : 'none'}" class="flex h-full flex-grow-1 justify-content-center"/>
+    </div>
+    <div class="flex flex-column justify-content-center align-items-center mt-5">
+        <app-lab-timer *ngIf="showSessionTimer" [endTime]="endTime!" [labSlug]="labSlug" [namespace]="namespace" (onEnd)="onSessionEnd()"></app-lab-timer>
+    </div>
+</p-card>

@@ -1,0 +1,16 @@
+<div class="flex flex-column w-full h-full">
+  <div class="w-full shadow-2 p-2 overflow-x-auto">
+    <p-tieredMenu
+      [model]="settingsItems"
+      [popup]="false"
+      styleClass="tieredmenu-horizontal w-full"
+      [style]="{ 'border': 'none', 'background': 'transparent' }"
+    />
+  </div>
+
+  <div class="flex h-full w-full flex-column">
+    <div class="flex-auto m-2">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

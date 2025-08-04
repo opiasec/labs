@@ -1,0 +1,68 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.difficulty-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.table-tags {
+    gap: 5px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+
+.difficulty-1 {
+    background-color: #22c55e;
+    color: white;
+}
+
+.difficulty-2 {
+    background-color: #eab308;
+    color: white;
+}
+
+.difficulty-3 {
+    background-color: #ef4444;
+    color: white;
+}
+
+.tech-badge {
+    background-color: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.difficulty-easy {
+    background-color: var(--p-tag-success-background);
+    color: var(--p-tag-success-color);
+}
+
+.difficulty-medium{
+    background-color: var(--p-tag-warn-background);
+    color: var(--p-tag-warn-color);
+}
+
+.difficulty-hard{
+    background-color: var(--p-tag-danger-background);
+    color: var(--p-tag-danger-color);
+}
+
+:host ::ng-deep {
+    .p-dropdown {
+        min-width: 150px;
+    }
+
+    .p-multiselect {
+        min-width: 150px;
+    }
+} 

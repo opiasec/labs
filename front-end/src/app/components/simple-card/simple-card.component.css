@@ -1,0 +1,24 @@
+.icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgb(42, 42, 42);
+    flex-shrink: 0;
+}
+
+.icon-container i {
+    font-size: 1.5rem;
+    color: var(--text-color);
+}
+
+
+:host-context(.p-dark) .icon-container {
+    background-color: var(--surface-600);
+}
+
+:host-context(.p-dark) .icon-container i {
+    color: var(--text-color);
+}

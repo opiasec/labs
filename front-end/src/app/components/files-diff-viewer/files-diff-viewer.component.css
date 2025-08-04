@@ -1,0 +1,32 @@
+#diffContainer {
+  background-color: #000000;
+  color: #dcdcdc;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-family: monospace;
+}
+
+.d2h-code-line {
+  background-color: #1e1e1e;
+  color: #dcdcdc;
+}
+
+.d2h-ins {
+  background-color: #144212 !important;
+  color: #cceccc !important;
+}
+
+.d2h-del {
+  background-color: #601010 !important;
+  color: #0b0b0b !important;
+}
+
+.d2h-info {
+  background-color: #2d2d2d !important;
+  color: #aaa !important;
+}
+
+.d2h-code-linenumber {
+  color: #888 !important;
+}

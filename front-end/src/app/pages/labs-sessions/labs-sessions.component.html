@@ -1,0 +1,67 @@
+<div class="mt-2">
+  <p-table [value]="sessions" [paginator]="true"
+  [rows]="10" [showCurrentPageReport]="true"
+  sortField="finishedAt" [sortOrder]="-1"
+  [tableStyle]="{ 'min-width': '70rem', 'width' : '100%', 'max-height': '78vh' }"
+    [rowsPerPageOptions]="[10,25,50]">
+    <ng-template #caption>
+      <div class="flex">
+        <h2 class="m-0">Lab Sessions</h2>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th>
+          Lab ID</th>
+        <th pSortableColumn="labName">Lab Name <p-sortIcon field="labName" /></th>
+        <th pSortableColumn="startedAt">Started At <p-sortIcon field="startedAt" /></th>
+        <th pSortableColumn="finishedAt">Finished At <p-sortIcon field="finishedAt" /></th>
+        <th pSortableColumn="score">Score <p-sortIcon field="score" /></th>
+        <th pSortableColumn="rating">Rating <p-sortIcon field="rating" /></th>
+        <th pSortableColumn="status">Status <p-sortIcon field="status" /></th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-session>
+      <tr>
+        <td>{{session.namespace}}</td>
+        <td>{{session.labSlug}}</td>
+        <td>{{session.startedAt | date:'dd/MM/yyyy HH:mm'}}</td>
+        <td>{{session?.finishedAt && isValidDate(session.finishedAt) ? 
+                                          (session.finishedAt | date:'dd/MM/yyyy HH:mm') : 'N/A'}}</td>
+        <td>{{session.score}}</td>
+        <td>
+          <p-rating [(ngModel)]="session.rating" [stars]="5"
+            (onRate)="onRate($event, session.namespace, session.labSlug)">
+          </p-rating>
+        </td>
+        <td>
+          <p-tag [value]="session.status" [severity]="utilsService.getStatusSeverity(session.status)" />
+        </td>
+        <td>
+          <p-button icon="pi pi-search" (onClick)="goToLabSession(session.namespace)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog header="Feedback" [(visible)]="assessmentDialog" [modal]="true" [draggable]="false" [resizable]="false">
+  <div class="flex flex-column align-items-center gap-1">
+    <p-tag value="{{assessmentLabSlug}}"></p-tag>
+    <p-tag value="{{assessmentSessionId}}" [style]="{background: 'transparent', color: 'var(--text-color)'}"></p-tag>
+  </div>
+  <div class="flex flex-column align-items-center gap-5 mt-5">
+    <p-rating [(ngModel)]="assessmentRating" [stars]="5"></p-rating>
+    <p-floatlabel variant="on">
+      <textarea pTextarea id="over_label" [(ngModel)]="assessmentFeedback" rows="5" cols="30" style="resize: none"
+        class="h-full"></textarea>
+      <label for="on_label">Feedback</label>
+    </p-floatlabel>
+    <div class="flex justify-content-end gap-2">
+      <p-button label="Save" (onClick)="sendFeedback(assessmentSessionId)"></p-button>
+      <p-button label="Cancel" severity="danger" outlined (onClick)="assessmentDialog = false"></p-button>
+    </div>
+
+  </div>
+</p-dialog>

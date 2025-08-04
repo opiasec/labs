@@ -1,0 +1,12 @@
+:host ::ng-deep .p-dialog-header {
+    background-color: var(--primary-menubar-bg);
+    color: white;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-header .p-dialog-header-icon {
+    color: white;
+}
+
+.text-color-secondary {
+    color: var(--text-color-secondary, #6c757d);
+}

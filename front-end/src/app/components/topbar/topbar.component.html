@@ -1,0 +1,23 @@
+<div class="card">
+    <p-toolbar [style]="{'padding': '1rem 1rem 1rem 1.5rem', 'background-color': 'var(--primary-menubar-bg)', 'border' : 'none', 'border-radius': '0px'}">
+        <ng-template #start>
+        </ng-template>
+  
+        <ng-template #end>
+            <div class="flex items-center justify-content-center justify-center gap-2">
+                <p-button (click)="toggleProfileModal()" [style]="{'background-color': 'var(--primary-menubar-bg)', 'border' : 'none', 'border-radius': '1px'}">
+                    <p-avatar  
+                    [image]="avatarUrl && avatarUrl.trim() !== '' ? avatarUrl : undefined"
+                     [label]="!avatarUrl || avatarUrl.trim() === '' ? 'U' : undefined"
+                    class="mr-2" 
+                    shape="circle" />
+                    <span pButtonLabel class="inline-flex flex-column text-white">
+                        <span class="flex font-bold">{{name}}</span>
+                    </span>
+                </p-button>
+            </div>
+        </ng-template>    
+    </p-toolbar>
+
+    <profile-modal-component [(visible)]="displayProfileModal" ></profile-modal-component>
+</div>

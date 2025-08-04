@@ -1,0 +1,58 @@
+<div class="flex align-items-center justify-content-center min-h-screen">
+    <p-card header="Login" class="w-full max-w-md">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <div class="flex flex-column">
+                <div class="flex flex-column gap-3" *ngIf="isPasswordVisible">
+                    <!-- Email -->
+                    <div class="flex flex-column gap-2 mt-3">
+                        <label for="email">Email</label>
+                        <input pInputText id="email" formControlName="email" placeholder="lets_learn@opiasec.com"
+                            class="w-full" />
+                        <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                            class="p-error">
+                            Email is required and must be a valid email address
+                        </small>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="flex flex-column gap-2 w-full">
+                        <label for="password">Password</label>
+                        <p-password id="password" formControlName="password" placeholder="type your password"
+                            [toggleMask]="true" [feedback]="false">
+                        </p-password>
+                        <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                            class="p-error">
+                            Login is required and must be at least 6 characters long
+                        </small>
+                    </div>
+
+                    <!-- Login -->
+                    <p-button type="submit" label="Login" [loading]="isLoading" [disabled]="loginForm.invalid"
+                        styleClass="w-full">
+                    </p-button>
+
+                    <!-- Divider -->
+                    <p-divider align="center" *ngIf="isProviderVisible && isPasswordVisible">
+                        <span class="text-sm text-color-secondary">or</span>
+                    </p-divider>
+                </div>
+
+                <div class="flex flex-column gap-3 mt-3" *ngIf="isProviderVisible">
+                    <!-- Provider Button -->
+                    <p-button type="button" [label]="loginWithProviderLabel" icon="pi pi-sign-in" severity="secondary"
+                        (click)="loginWithProvider()" [loading]="isAuth0Loading" styleClass="w-full">
+                    </p-button>
+                </div>
+
+
+                <!-- Links -->
+                <div class="flex flex-column gap-2 text-center mt-3">
+                    <span class="text-sm">
+                        Powered by
+                        <a href="https://opiasec.com" class="text-primary">opiasec</a>
+                    </span>
+                </div>
+            </div>
+        </form>
+    </p-card>
+</div>

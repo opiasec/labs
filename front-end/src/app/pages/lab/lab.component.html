@@ -1,0 +1,43 @@
+<div class="h-full w-full">
+    <div class="flex align-items-center mb-2 mt-2 ml-2 gap-4">
+        <p-button label="Leave Lab" icon="pi pi-check" [disabled]="!labIsReady && !labIsDeploying" (onClick)="leaveLab()" severity="danger" variant="outlined"></p-button>
+        <p-button label="Finish Lab" icon="pi pi-check" [disabled]="!labIsReady" (onClick)="finishLab()" severity="contrast" variant="outlined"></p-button>
+        <p-button label="Deploy Lab" icon="pi pi-play" [loading]="labIsDeploying" [disabled]="labIsReady" (onClick)="deployLab()" severity="success" variant="outlined"></p-button>
+        <div class="flex flex-row align-items-center justify-content-end">
+            <app-sensitive-data-display *ngIf="labIsReady" [value]="labPassword" styleClass="mr-2"></app-sensitive-data-display>
+            <button *ngIf="labIsReady && ideUrl" pButton type="button" icon="pi pi-external-link" class="p-button-text p-button-sm" (click)="openIdeInNewTab()" pTooltip="Open IDE in new tab" tooltipPosition="top"></button>
+        </div>
+    </div>
+
+    <p-tabs class="flex " [value]="labIsReady ? 'IDE' : 'Intro'">
+        <p-tablist>
+            <p-tab [value]="'Intro'" label="Introduction">Introduction</p-tab>
+            <p-tab [value]="'IDE'" label="IDE" [disabled]="!labIsReady">IDE</p-tab>
+        </p-tablist>
+        <p-tabpanels >
+            <p-tabpanel [value]="'Intro'">
+                <div style="height: 74vh; overflow: auto">
+                    <markdown class="flex flex-column m-5"
+                    [data]="labIntroMarkdown"
+                    clipboard
+                    [clipboardButtonComponent]="buttonComponent"
+                    >
+                    </markdown>
+
+                    <p-scrolltop target="parent"
+                    [threshold]="100"
+                    icon="pi pi-arrow-up"
+                    [buttonProps]="{ severity: 'contrast',
+                    raised: true,
+                    rounded: true,
+                    style: {'z-index' : '1050'} }" />
+                </div>
+            </p-tabpanel>
+            <p-tabpanel [value]="'IDE'">
+                <iframe *ngIf="ideUrl" [src]="ideUrl" style="border: none; height: 73vh; width: 100%;"></iframe>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>
+
+<p-confirmDialog></p-confirmDialog>

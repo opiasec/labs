@@ -1,0 +1,476 @@
+<div class="flex flex-column m-2">
+    <p-toolbar class="mb-2">
+        <ng-template #start>
+            <p-button label="New" icon="pi pi-plus" class="mr-2" (onClick)="openNew()" />
+            <p-button severity="danger" label="Delete" icon="pi pi-trash" outlined (onClick)="deleteSelectedLabs()"
+                [disabled]="!selectedLabs || !selectedLabs.length" />
+        </ng-template>
+    </p-toolbar>
+
+    <p-table #dt1 [value]="labs" [rows]="10" [columns]="cols" [paginator]="true"
+        [globalFilterFields]="['title', 'slug']" [tableStyle]="{ 'min-width': '75rem' }" [(selection)]="selectedLabs"
+        [rowHover]="true" dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [showCurrentPageReport]="true">
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h2 class="m-0">Manage Labs</h2>
+                <p-iconfield iconPosition="left" class="ml-auto">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input #searchInput pInputText type="text" (input)="dt1.filterGlobal(searchInput.value, 'contains')"
+                        placeholder="Search keyword" />
+                </p-iconfield>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox />
+                </th>
+                <th style="width:5%;">Slug</th>
+                <th style="width:12%">Title</th>
+                <th style="width:20%">Description</th>
+                <th style="width:8%">Difficulty</th>
+                <th style="width:18%">Vulnerabilities</th>
+                <th style="width:15%">Languages</th>
+                <th style="width:15%">Technologies</th>
+                <th style="width:10%">Est. Time</th>
+                <th pSortableColumn="Active" style="width: 5%;">
+                    <div class="flex items-center gap-2">
+                        Active
+                        <p-sortIcon field="Active" />
+                    </div>
+                </th>
+                <th style="min-width: 5%"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-lab>
+            <tr>
+                <td style="width: 3rem">
+                    <p-tableCheckbox [value]="lab" />
+                </td>
+                <td style="min-width: 12rem">{{ lab.slug }}</td>
+                <td style="min-width: 16rem">{{ lab.title }}</td>
+                <td>{{ lab.description }}</td>
+                <td>
+                    <p-tag [value]="lab.difficulty" [severity]="getDifficultySeverity(lab.difficulty)">
+                    </p-tag>
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let tech of lab.vulnerabilities">
+                            <p-tag [value]="tech.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let tech of lab.languages">
+                            <p-tag [value]="tech.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-tags">
+                        <ng-container *ngFor="let tech of lab.technologies">
+                            <p-tag [value]="tech.name" severity="secondary"></p-tag>
+                        </ng-container>
+                    </div>
+                </td>
+                <td>{{ lab.estimatedTime }}</td>
+                <td>
+                    <p-tag [value]="lab.active" [severity]="getSeverity(lab.active)" />
+                </td>
+                <td class="">
+                    <p-button icon="pi pi-pencil" class="flex mb-2" [rounded]="true" [outlined]="true"
+                        (click)="editLab(lab)" />
+                    <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [outlined]="true"
+                        (click)="deleteLab(lab)" />
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="labDialog" [style]="{ width: '1000px', height: '1000px' }" header="Lab Details" [modal]="true">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <p-tabs value="0" class="w-full justify-content-center align-items-center">
+                <p-tablist>
+                    <p-tab value="0">Basic Info</p-tab>
+                    <p-tab value="1">Readme</p-tab>
+                    <p-tab value="2">System Requirements</p-tab>
+                    <p-tab value="3">Evaluators</p-tab>
+                </p-tablist>
+                <p-tabpanels class="w-full">
+                    <p-tabpanel value="0" class="flex align-items-center justify-content-center">
+                        <div class="flex gap-4 align-items-start justify-content-center">
+                            <div class="flex flex-column gap-4">
+                                <div class="flex flex-column gap-2">
+                                    <label for="labDifficulty">Difficulty</label>
+                                    <p-select id="labDifficulty" [options]="possiblesDifficulties"
+                                        [(ngModel)]="lab.difficulty" placeholder="Select Difficulty" required>
+                                    </p-select>
+                                    <small class="text-red-500" *ngIf="submitted && !lab.difficulty">Difficulty is
+                                        required.</small>
+                                </div>
+                                <div class="flex-none flex flex-column gap-2">
+                                    <label for="labVulnerabilities">Vulnerabilities</label>
+                                    <p-multiselect id="labVulnerabilities" [options]="possiblesVulnerabilities"
+                                        [optionLabel]="'name'" 
+                                        [(ngModel)]="lab.vulnerabilities" placeholder="Select Vulnerabilities" required
+                                        class="w-full multiselect-fixed-width" display="comma" [maxSelectedLabels]="1"
+                                        selectedItemsLabel="{0} vulnerabilities selected">
+                                    </p-multiselect>
+                                    <small class="text-red-500" *ngIf="submitted && !lab.vulnerabilities">At least one
+                                        vulnerability is required.</small>
+                                </div>
+                                <div class="flex-none flex flex-column gap-2">
+                                    <label for="labLanguages">Languages</label>
+                                    <p-multiselect id="labLanguages" [options]="possiblesLanguages"
+                                        [optionLabel]="'name'"
+                                        [(ngModel)]="lab.languages" placeholder="Select Languages" required
+                                        class="w-full multiselect-fixed-width" display="comma" [maxSelectedLabels]="1"
+                                        selectedItemsLabel="{0} languages selected">
+                                    </p-multiselect>
+                                    <small class="text-red-500" *ngIf="submitted && !lab.languages">At least one
+                                        language is required.</small>
+                                </div>
+                                <div class="flex-none flex flex-column gap-2">
+                                    <label for="labTechnologies">Technologies</label>
+                                    <p-multiselect id="labTechnologies" [options]="possiblesTechnologies"
+                                        [optionLabel]="'name'"
+                                        [(ngModel)]="lab.technologies" placeholder="Select Technologies" required
+                                        class="w-full multiselect-fixed-width" display="comma" [maxSelectedLabels]="1"
+                                        selectedItemsLabel="{0} technologies selected">
+                                    </p-multiselect>
+                                    <small class="text-red-500" *ngIf="submitted && !lab.technologies">At least one
+                                        technology is required.</small>
+                                </div>
+                            </div>
+                            <div class="flex flex-column gap-4">
+                                <div class="flex flex-column gap-2">
+                                    <label for="labSlug">Slug</label>
+                                    <input type="text" pInputText id="labSlug" [(ngModel)]="lab.slug" required />
+                                    <small class="text-red-500" *ngIf="submitted && !lab.slug">Slug is
+                                        required.</small>
+                                    <small class="text-gray-500">Must be unique and contain only lowercase letters, numbers, and hyphens. No white-space.</small>
+                                        
+                                </div>
+                                <div class="flex flex-column gap-2">
+                                    <label for="labTitle">Title</label>
+                                    <input type="text" pInputText id="labTitle" [(ngModel)]="lab.title" required />
+                                    <small class="text-red-500" *ngIf="submitted && !lab.title">Title is
+                                        required.</small>
+                                </div>
+                                <div class="flex flex-column gap-2">
+                                    <label for="labDescription">Description</label>
+                                    <textarea pInputTextarea id="labDescription" [autoResize]="false" rows="5" cols="40"
+                                        [(ngModel)]="lab.description" required>
+                                </textarea>
+                                    <small class="text-red-500" *ngIf="submitted && !lab.description">Description is
+                                        required.</small>
+                                </div>
+                            </div>
+                            <div class="flex flex-column gap-4">
+                                <div class="flex flex-column gap-2">
+                                    <label for="labAuthors">Authors</label>
+                                    <p-chips 
+                                        id="labAuthors"
+                                        [(ngModel)]="lab.authors" 
+                                        [allowDuplicate]="false"
+                                        fluid>
+                                    </p-chips>
+                                    <small class="text-gray-500">Press Enter to add each author. Example: opiasec Labs</small>
+                                </div>
+                                <div class="flex flex-column gap-2">
+                                    <label for="labExternalReferences">External References</label>
+                                    <p-chips 
+                                        id="labExternalReferences"
+                                        [(ngModel)]="lab.externalReferences" 
+                                        [allowDuplicate]="false"
+                                        fluid>
+                                    </p-chips>
+                                    <small class="text-gray-500">Press Enter to add each reference. Example: https://owasp.org/www-project-top-ten/</small>
+                                </div>
+                                <div class="flex flex-column gap-2 ">
+                                    <label for="labEstimatedTime">Estimated Time (minutes)</label>
+                                    <p-inputnumber [(ngModel)]="lab.estimatedTime" required mode="decimal"
+                                        inputId="withoutgrouping" [useGrouping]="false" />
+                                    <small class="text-red-500" *ngIf="submitted && !lab.estimatedTime">Estimated Time
+                                        is
+                                        required.</small>
+                                </div>
+                                <div class="flex flex-column gap-2">
+                                    <label for="labActive">Active</label>
+                                    <p-toggleswitch id="labActive" [(ngModel)]="lab.active" />
+                                </div>
+                                <div class="flex flex-column gap-2">
+                                    <label for="labRequiresManualReview">Requires Manual Review</label>
+                                    <p-toggleswitch id="labRequiresManualReview"
+                                        [(ngModel)]="lab.requiresManualReview" />
+                                </div>
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="1">
+                        <div class="flex flex-column gap-2">
+                            <label for="labReadme">Readme</label>
+                            <small class="text-gray-500">Provide a detailed description of the lab in .MD format. All images must be included as a link (and be accessible by the front-end).</small>
+                            <textarea pInputTextarea id="labReadme" rows="30" placeholder="# Hello"
+                                [(ngModel)]="lab.readme"></textarea>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="2">
+                        <div class="flex flex-column gap-4">
+                            <!-- Image Selection -->
+                            <div class="flex flex-column gap-2">
+                                <label for="labImage">Container Image</label>
+                                <p-select id="labImage" [options]="possibleImages"
+                                    [(ngModel)]="lab.config.systemRequirements.image"
+                                    placeholder="Select Container Image" required>
+                                </p-select>
+                                <small class="text-red-500"
+                                    *ngIf="submitted && !lab.config.systemRequirements.image">Image is required.</small>
+                            </div>
+
+                            <div class="flex flex-column gap-2">
+                                <label for="gitUrl">Git URL</label>
+                                <input type="text" pInputText id="gitUrl"
+                                    [(ngModel)]="lab.config.systemRequirements.codeConfig.gitUrl"
+                                    placeholder="github.com/user/repo.git" required />
+                                <small class="text-red-500"
+                                    *ngIf="submitted && !lab.config.systemRequirements.codeConfig.gitUrl">Git
+                                    URL is required.</small>
+                            </div>
+
+                            <!-- Code Config Section -->
+                            <div class="flex flex-column gap-4">
+                                <h3 class="m-0">Code Configuration</h3>
+                                <div class="grid grid-cols-1 gap-2">
+
+                                    <div class="flex gap-4">
+                                        <div class="flex flex-column gap-2 flex-1">
+                                            <label for="gitBranch">Git Branch</label>
+                                            <input type="text" pInputText id="gitBranch"
+                                                [(ngModel)]="lab.config.systemRequirements.codeConfig.gitBranch"
+                                                placeholder="main" required />
+                                            <small class="text-red-500"
+                                                *ngIf="submitted && !lab.config.systemRequirements.codeConfig.gitBranch">Git
+                                                Branch is required.</small>
+                                        </div>
+
+                                        <div class="flex flex-column gap-2 flex-1">
+                                            <label for="gitPath">Git Path</label>
+                                            <input type="text" pInputText id="gitPath"
+                                                [(ngModel)]="lab.config.systemRequirements.codeConfig.gitPath"
+                                                placeholder="labs/sql-injection" />
+                                            <small class="text-gray-500">Optional: Path within the repository</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Environment Variables Section -->
+                            <div class="flex flex-column gap-4">
+                                <div class="flex justify-between align-items-center gap-4">
+                                    <div class="flex flex-column">
+                                        <h3 class="m-0">Environment Variables</h3>
+                                        <p class="text-sm text-muted-color m-0">Configure key-value pairs for lab
+                                            environment</p>
+                                    </div>
+                                    <p-button label="Add Variable" icon="pi pi-plus" (click)="addKeyValuePair()"
+                                        size="small" />
+                                </div>
+
+                                <!-- Key-Value Pairs with validation -->
+                                <div class="flex flex-column gap-3" *ngIf="keyValuePairs.length > 0">
+                                    <div class="flex gap-3 align-items-start p-4 border-1 surface-border border-round"
+                                        [class.border-red-500]="submitted && !isKeyValuePairValid(pair)"
+                                        *ngFor="let pair of keyValuePairs; let i = index">
+
+                                        <!-- Key Input with validation -->
+                                        <div class="flex flex-column gap-2 flex-1">
+                                            <label class="text-sm font-medium">
+                                                Key <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" pInputText [(ngModel)]="pair.key"
+                                                placeholder="DATABASE_URL"
+                                                [class.ng-invalid]="submitted && pair.key.trim() === ''"
+                                                class="w-full" />
+                                            <small class="text-red-500" *ngIf="submitted && pair.key.trim() === ''">
+                                                Key is required
+                                            </small>
+                                        </div>
+
+                                        <!-- Value Input with validation -->
+                                        <div class="flex flex-column gap-2 flex-1">
+                                            <label class="text-sm font-medium">
+                                                Value <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" pInputText [(ngModel)]="pair.value"
+                                                placeholder="localhost:5432"
+                                                [class.ng-invalid]="submitted && pair.value.trim() === ''"
+                                                class="w-full" />
+                                            <small class="text-red-500" *ngIf="submitted && pair.value.trim() === ''">
+                                                Value is required
+                                            </small>
+                                        </div>
+
+                                        <!-- Remove Button -->
+                                        <div class="flex flex-column gap-2">
+                                            <label class="text-sm font-medium text-transparent">Action</label>
+                                            <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                                size="small" [rounded]="true" (click)="removeKeyValuePair(i)" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Empty State for Environment Variables -->
+                                <div class="text-center p-6 border-2 border-dashed surface-border border-round"
+                                    *ngIf="keyValuePairs.length === 0">
+                                    <i class="pi pi-cog text-4xl text-muted-color mb-3"></i>
+                                    <h4 class="text-muted-color mt-0 mb-2">No environment variables</h4>
+                                    <p class="text-muted-color text-sm m-0">Add key-value pairs to configure the lab
+                                        environment</p>
+                                </div>
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="3">
+                        <div class="flex flex-column gap-4">
+                            <!-- Header Section -->
+                            <div class="flex justify-between align-items-center gap-4">
+                                <div class="flex flex-column">
+                                    <h3 class="m-0">Lab Evaluators</h3>
+                                    <p class="text-sm text-muted-color m-0">Configure evaluation criteria for this lab
+                                        (optional)</p>
+                                </div>
+                                <p-button label="Add Evaluator" icon="pi pi-plus" (click)="addEvaluator()"
+                                    size="small" />
+                            </div>
+
+                            <!-- Evaluators List -->
+                            <div class="flex flex-column gap-4" *ngIf="evaluators.length > 0">
+                                <div class="border-1 surface-border border-round p-4"
+                                    *ngFor="let evaluator of evaluators; let i = index">
+
+                                    <!-- Evaluator Header -->
+                                    <div class="flex justify-between align-items-center mb-4 gap-2">
+                                        <h4 class="m-0">Evaluator {{ i + 1 }}</h4>
+                                        <p-button icon="pi pi-trash" severity="danger" [outlined]="true" size="small"
+                                            [rounded]="true" (click)="removeEvaluator(i)" />
+                                    </div>
+
+                                    <!-- Evaluator Form -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Evaluator Slug -->
+                                        <div class="flex flex-column gap-2">
+                                            <label for="evaluatorSlug_{{i}}">Evaluator Type <span class="text-red-500">*</span></label>
+                                            <p-select id="evaluatorSlug_{{i}}" [options]="possibleEvaluators"
+                                                [(ngModel)]="evaluator.slug" placeholder="Select Evaluator Type"
+                                                (onChange)="onEvaluatorTypeChange(evaluator)" required>
+                                            </p-select>
+                                            <small class="text-red-500" *ngIf="submitted && !evaluator.slug">Evaluator
+                                                type is required.</small>
+                                        </div>
+
+                                        <!-- Weight -->
+                                        <div class="flex flex-column gap-2">
+                                            <label for="evaluatorWeight_{{i}}">Weight (%) <span class="text-red-500">*</span></label>
+                                            <p-inputnumber id="evaluatorWeight_{{i}}" [(ngModel)]="evaluator.weight"
+                                                mode="decimal" [min]="0" [max]="100" suffix="%"
+                                                placeholder="e.g., 50" />
+                                            <small class="text-red-500" *ngIf="submitted && (evaluator.weight < 0 || evaluator.weight > 100)">
+                                                Weight must be between 0 and 100.
+                                            </small>
+                                            <small class="text-red-500" *ngIf="submitted && !evaluator.weight">Weight is
+                                                required.</small>
+                                            <small class="text-gray-500">Percentage weight of this evaluator in the
+                                                final score</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Config Section -->
+                                    <div class="flex flex-column gap-3 mt-4">
+                                        <div class="flex justify-between align-items-center gap-2">
+                                            <h5 class="m-0">Configuration</h5>
+                                            <p-button label="Add Config" icon="pi pi-plus"
+                                                (click)="addEvaluatorConfig(i)" size="small" [outlined]="true" />
+                                        </div>
+
+                                        <!-- Config Key-Value Pairs -->
+                                        <div class="flex flex-column gap-2"
+                                            *ngIf="evaluator.config && evaluator.config.length > 0">
+                                            <div class="flex gap-3 align-items-center p-3 border-1 surface-border border-round"
+                                                *ngFor="let config of evaluator.config; let j = index">
+
+                                                <!-- Config Key -->
+                                                <div class="flex flex-column gap-1 flex-1">
+                                                    <label class="text-sm font-medium">Key</label>
+                                                    <input type="text" pInputText [(ngModel)]="config.key"
+                                                        placeholder="timeout" class="w-full" required />
+                                                </div>
+
+                                                <!-- Config Value -->
+                                                <div class="flex flex-column gap-1 flex-1">
+                                                    <label class="text-sm font-medium">Value</label>
+                                                    <input type="text" pInputText [(ngModel)]="config.value"
+                                                        placeholder="30" class="w-full" />
+                                                </div>
+
+                                                <!-- Remove Config Button -->
+                                                <div class="flex flex-column gap-1">
+                                                    <label class="text-sm font-medium text-transparent">Action</label>
+                                                    <p-button icon="pi pi-trash" severity="danger" [outlined]="true"
+                                                        size="small" (click)="removeEvaluatorConfig(i, j)" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Empty Config State -->
+                                        <div class="text-center p-4 border-2 border-dashed surface-border border-round"
+                                            *ngIf="!evaluator.config || evaluator.config.length === 0">
+                                            <p class="text-muted-color text-sm m-0">No configuration parameters. Click
+                                                "Add Config" to add some.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Exploit Template (only for Exploit evaluator) -->
+                                    <div class="flex flex-column gap-2 mt-4" *ngIf="evaluator.slug === 'exploit'">
+                                        <label for="exploitTemplate_{{i}}">Exploit Template</label>
+                                        <textarea pInputTextarea id="exploitTemplate_{{i}}"
+                                            [(ngModel)]="evaluator.exploitTemplate" rows="10"
+                                            placeholder="#!/bin/bash&#10;# Write your exploit template here&#10;# Available variables: $TARGET_URL, $LAB_ID&#10;&#10;echo 'Starting exploit...'&#10;curl -X POST $TARGET_URL/login -d 'username=admin&password=password'">
+                                        </textarea>
+                                        <small class="text-gray-500">
+                                            Template for the exploit script. You can use variables like $TARGET_URL,
+                                            $LAB_ID, etc.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div class="text-center p-6 border-2 border-dashed surface-border border-round"
+                                *ngIf="evaluators.length === 0">
+                                <i class="pi pi-shield text-4xl text-muted-color mb-3"></i>
+                                <h4 class="text-muted-color mt-0 mb-2">No evaluators configured</h4>
+                                <p class="text-muted-color text-sm m-0">Evaluators are optional. Add them to
+                                    automatically evaluate lab submissions.</p>
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Cancel" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Save" icon="pi pi-check" (click)="saveLab()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{ width: '450px' }" />

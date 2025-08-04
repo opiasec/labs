@@ -1,0 +1,43 @@
+<div class="mt-2">
+  <p-table [value]="sessions" [paginator]="true"
+  [rows]="10" [showCurrentPageReport]="true"
+  sortField="finishedAt" [sortOrder]="-1"
+  [tableStyle]="{ 'min-width': '70rem', 'width' : '100%', 'max-height': '78vh' }"
+    [rowsPerPageOptions]="[10,25,50]">
+    <ng-template #caption>
+      <div class="flex">
+        <h2 class="m-0">Lab Sessions</h2>
+      </div>
+    </ng-template>
+    <ng-template #header>
+      <tr>
+        <th style="width: 25%;">
+          Lab ID</th>
+        <th pSortableColumn="labName" style="width: 15%;">Lab Name <p-sortIcon field="labName" /></th>
+        <th pSortableColumn="namespace" style="width: 20%;">User <p-sortIcon field="user" /></th>
+        <th pSortableColumn="startedAt" style="width: 10%;">Started At <p-sortIcon field="startedAt" /></th>
+        <th pSortableColumn="finishedAt" style="width: 10%;">Finished At <p-sortIcon field="finishedAt" /></th>
+        <th pSortableColumn="score" style="width: 5%;">Score <p-sortIcon field="score" /></th>
+        <th pSortableColumn="status" style="width: 10%;">Status <p-sortIcon field="status" /></th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-session>
+      <tr>
+          <td>{{session.namespace}}</td>
+          <td>{{session.labSlug}}</td>
+        <td>{{session.userId}}</td>
+        <td>{{session.startedAt | date:'dd/MM/yyyy HH:mm'}}</td>
+        <td>{{session?.finishedAt && isValidDate(session.finishedAt) ? 
+                                          (session.finishedAt | date:'dd/MM/yyyy HH:mm') : 'N/A'}}</td>
+        <td>{{session.score}}</td>
+        <td>
+          <p-tag [value]="session.status" [severity]="utilsService.getStatusSeverity(session.status)" />
+        </td>
+        <td>
+          <p-button icon="pi pi-search" (onClick)="goToAdminLabSession(session.namespace)"></p-button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

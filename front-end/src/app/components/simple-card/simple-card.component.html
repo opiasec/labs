@@ -1,0 +1,13 @@
+<p-card>
+    <div class="flex justify-content-start align-items-center gap-3">
+        <div class="icon-container" *ngIf="icon">
+            <i [class]="icon"></i>
+        </div>
+        <div class="flex flex-column">
+            <span class="m-0">{{ title }}</span>
+            <div class="details">
+                <h3 class="m-0">{{ details }}</h3>
+            </div>
+        </div>
+    </div>
+</p-card>

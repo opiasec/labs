@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sync-images-job
+  namespace: registry
+spec:
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      containers:
+      - name: sync
+        image: docker:20-dind
+        securityContext:
+          privileged: true
+        envFrom:
+        - secretRef:
+            name: registry-credentials
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            dockerd-entrypoint.sh --insecure-registry=registry.registry.svc.cluster.local:5000 & \
+            apk add --no-cache curl bash && \
+            curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq && \
+            chmod +x /usr/local/bin/yq && \
+            cp /scripts/sync-images-script.sh /tmp/sync.sh && \
+            chmod +x /tmp/sync.sh && \
+            /tmp/sync.sh /configs/sync-images.yaml
+
+        volumeMounts:
+        - name: sync-script
+          mountPath: /scripts
+        - name: sync-config
+          mountPath: /configs
+      restartPolicy: Never
+      volumes:
+      - name: sync-script
+        configMap:
+          name: sync-images-script
+      - name: sync-config
+        configMap:
+          name: sync-images-file

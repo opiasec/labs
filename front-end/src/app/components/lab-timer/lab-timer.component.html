@@ -1,0 +1,17 @@
+<div class="flex flex-column justify-content-center align-items-center" (click)="goToLab()" style="cursor: pointer;">
+    <div class="flex align-items-center gap-2">
+        <span class="live-indicator" style="
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 40%;
+        animation: pulse 1s infinite;
+        flex-shrink: 0;
+        margin-right: 0.1rem;"></span>
+        <strong>LIVE</strong>
+      </div>
+    <span class="session-title">Active Lab: {{ labSlug }}</span>
+    
+
+<p-tag [severity]="isCritical ? 'warn' : 'success'" value="{{ remainingTime }}"></p-tag>
+</div>

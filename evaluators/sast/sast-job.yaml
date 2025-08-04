@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: avaliar-sast
+  namespace: 7b921131-ca21-46c9-9070-d96af696bc89
+spec:
+  template:
+    spec:
+      containers:
+      - name: sast
+        image: ghcr.io/appsec-digital/eval-sast:dev
+        command: ["/bin/sh", "-c"]
+        args: ["semgrep scan /workspace --json --output /results/result.json >/dev/null 2>&1 && cat /results/result.json | jq '.' || echo 'Semgrep scan failed'"] 
+        volumeMounts:
+        - name: lab-volume
+          mountPath: /workspace
+        - name: result-volume
+          mountPath: /results
+      restartPolicy: Never
+      volumes:
+      - name: lab-volume
+        persistentVolumeClaim:
+          claimName: code-server-pvc
+      - name: result-volume
+        emptyDir: {}
