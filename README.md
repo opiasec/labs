@@ -160,6 +160,8 @@ make local-install
 
 - Docker compose up
 
+- Linkar a rede do opiaseclabs com o clustser kubernetes
+
 # Prox passos
 
 - Criar makefile
