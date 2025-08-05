@@ -4,7 +4,6 @@ import (
 	"appseclabsplataform/config"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 )
 
@@ -22,9 +21,8 @@ func NewLabIDEService(config *config.Config) *LabIDEService {
 	}
 }
 
-func (l *LabIDEService) GetStatus(ideLabURL string) (GetLabResponse, error) {
-	slog.Info("Checking IDE lab status", "url", ideLabURL)
-	resp, err := l.Client.Get(fmt.Sprintf("%shealthz", ideLabURL))
+func (l *LabIDEService) GetStatus(namespace string) (GetLabResponse, error) {
+	resp, err := l.Client.Get(fmt.Sprintf("%s/%s/healthz", l.BaseURL, namespace))
 	if err != nil {
 		return GetLabResponse{}, err
 	}

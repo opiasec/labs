@@ -104,6 +104,7 @@ export class LabComponent implements OnInit, OnDestroy {
       this.ideUrl = this.sanitizer.bypassSecurityTrustResourceUrl(activeLab!.ideUrl!);
       this.labSessionService.setLabEndTime(activeLab!.expiresAt!);
       this.labNamespace = activeLab!.namespace!;
+      this.labPassword = activeLab!.labPassword!;
       this.labIsReady = true;
       this.labStarted = true;
       this.labIsDeploying = false;

@@ -3,7 +3,7 @@ install: get-kube-config compose-up
 
 run:
 	@echo "Running docker compose"
-	docker-compose -f deployments/docker-compose.yaml -p lab-cluster-api up -d
+	docker-compose -f deployment/docker-compose.yaml -p lab-cluster-api up -d
 
 stop: compose-down
 
@@ -13,31 +13,31 @@ get-kube-config:
 
 cloud-install:
 	@echo "Installing docker compose in cloud"
-	docker compose -f deployments/docker-compose.yaml -p lab-cluster-api up -d --build
+	docker compose -f deployment/docker-compose.yaml -p lab-cluster-api up -d --build
 
 cloud-stop:
 	@echo "Stopping docker compose in cloud"
-	docker compose -f deployments/docker-compose.yaml -p lab-cluster-api down -v
+	docker compose -f deployment/docker-compose.yaml -p lab-cluster-api down -v
 
 cloud-run:
 	@echo "Running docker compose in cloud"
-	docker compose -f deployments/docker-compose.yaml -p lab-cluster-api up -d
+	docker compose -f deployment/docker-compose.yaml -p lab-cluster-api up -d
 
 local-install:
 	@echo "Installing mongo"
-	docker-compose -f deployments/docker-compose.yaml -p lab-cluster-api up -d mongodb --build
+	docker-compose -f deployment/docker-compose.yaml -p lab-cluster-api up -d mongodb --build
 
 local-stop:
 	@echo "Stopping mongo"
-	docker-compose -f deployments/docker-compose.yaml -p lab-cluster-api down -v mongodb
+	docker-compose -f deployment/docker-compose.yaml -p lab-cluster-api down -v mongodb
 
 compose-up:
 	@echo "Starting docker compose"
-	docker-compose -f deployments/docker-compose.yaml -p lab-cluster-api up -d --build
+	docker-compose -f deployment/docker-compose.yaml -p lab-cluster-api up -d --build
 
 compose-down:
 	@echo "Stopping docker compose"
-	docker-compose -f deployments/docker-compose.yaml -p lab-cluster-api down -v
+	docker-compose -f deployment/docker-compose.yaml -p lab-cluster-api down -v
 
 delete-all-labs-namespaces:
 	@set -e

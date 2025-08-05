@@ -85,7 +85,7 @@ func (u *LabUsecase) GetLabStatus(namespace string, userID string) (*GetLabRespo
 		return nil, errors.New("unauthorized")
 	}
 
-	labStatus, err := u.LabIDE.GetStatus(labSession.IDEURL)
+	labStatus, err := u.LabIDE.GetStatus(namespace)
 	if err != nil {
 		slog.Error("Failed to get lab status from labIDE", "error", err)
 		return nil, err

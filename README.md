@@ -149,3 +149,29 @@ make local-install
 ```sh
 make local-install
 ```
+
+# Readme Final
+
+- Iniciar o cluster kubernetes
+
+- Configurar variaveis de ambiente
+
+- Criar o kubeconfig (pode ser via makefile)
+
+- Docker compose up
+
+# Prox passos
+
+- Criar makefile
+
+- Configurar makefile (e comandos) para desenvolvimento local
+
+- Larubia rodar tudo na máquina dele
+
+- Criar um release tag (v0.0.1)
+
+- Escreve o getting started no documentation
+
+- Escrever a publicação
+
+- Settar o ambiente de beta
