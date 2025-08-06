@@ -17,6 +17,14 @@ services:
       - LAB_IDE_BASE_URL
       - WEBHOOK_SECRET_TOKEN
       - TLS_ENABLED
+      - AUTH_PROVIDER_LOGIN_ENABLED
+      - JWKS_URL
+      - AUTH_PROVIDER_NAME
+      - AUTH_PROVIDER_AUTHORIZATION_URL
+      - AUTH_PROVIDER_TOKEN_URL
+      - AUTH_PROVIDER_AUDIENCE
+      - AUTH_PROVIDER_CLIENT_ID
+      - AUTH_PROVIDER_SCOPE
     depends_on:
       redis:
         condition: service_started
@@ -92,8 +100,8 @@ services:
       - db-data:/data/db
       - ./api/deployment/mongodb/init:/docker-entrypoint-initdb.d
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
     networks:
       - labs-net
 volumes:

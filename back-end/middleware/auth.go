@@ -92,6 +92,23 @@ func validateTokenFromJWKS(jwksURL string, token string) (*CustomClaims, error) 
 		slog.Error("JWKS URL is not set")
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, echo.Map{"error": "internal server error"})
 	}
+
+	tokenString := strings.TrimPrefix(token, "Bearer ")
+	tokenSimpleParsed, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	if tokenSimpleParsed == nil {
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, echo.Map{"error": "invalid token format"})
+	}
+
+	if err != nil {
+		slog.Error("error parsing token", "error", err)
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, echo.Map{"error": "invalid token"})
+	}
+
+	kid, ok := tokenSimpleParsed.Header["kid"].(string)
+	if !ok {
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, echo.Map{"error": "missing kid in token header"})
+	}
+
 	resp, err := http.Get(jwksURL)
 	if err != nil {
 		slog.Error("error getting JWKS", "error", err)
@@ -126,7 +143,26 @@ func validateTokenFromJWKS(jwksURL string, token string) (*CustomClaims, error) 
 		return nil, echo.NewHTTPError(http.StatusInternalServerError, echo.Map{"error": "internal server error"})
 	}
 
-	key := jwks.Keys[0]
+	var key *struct {
+		Kty string `json:"kty"`
+		Kid string `json:"kid"`
+		Use string `json:"use"`
+		Alg string `json:"alg"`
+		N   string `json:"n"`
+		E   string `json:"e"`
+	}
+
+	for _, k := range jwks.Keys {
+		if k.Kid == kid {
+			key = &k
+			break
+		}
+	}
+
+	if key == nil {
+		slog.Error("key not found for kid", "kid", kid)
+		return nil, echo.NewHTTPError(http.StatusUnauthorized, echo.Map{"error": "key not found"})
+	}
 	nBytes, err := base64.RawURLEncoding.DecodeString(key.N)
 	if err != nil {
 		slog.Error("error decoding n", "error", err)
@@ -144,7 +180,6 @@ func validateTokenFromJWKS(jwksURL string, token string) (*CustomClaims, error) 
 		E: int(new(big.Int).SetBytes(eBytes).Int64()),
 	}
 
-	tokenString := strings.TrimPrefix(token, "Bearer ")
 	tokenParsed, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return publicKey, nil
 	})
