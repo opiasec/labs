@@ -1,5 +1,6 @@
 node_modules
-.env
+*.env
 ubuntu@*
 kubeconfig
 kubeconfig.b64
+kubeconfig_base64
