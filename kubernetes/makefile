@@ -1,5 +1,5 @@
-## Create a Kubernetes cluster using kind, setup ingress-nginx and get kubeconfig. Create a kind cluster using kind-config.yaml for configuration
-install: create-cluster create-ingress-nginx get-kubeconfig
+## Create a Kubernetes cluster using kind and setup ingress-nginx. Create a kind cluster using kind-config.yaml for configuration
+install: create-cluster create-ingress-nginx
 
 ## Create a Kubernetes cluster using kind. Using kind-config.yaml for configuration
 create-cluster:

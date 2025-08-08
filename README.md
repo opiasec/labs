@@ -11,7 +11,7 @@ To get started with opiasec Labs, please follow our [Getting Started Guide](http
 We welcome contributions to opiasec Labs! If you're interested in contributing, please check out our [Contributing Guide](https://docs.opiasec.com/docs/governance/CONTRIBUTING).
 
 ## License
-TODO
+This project is licensed under the [Apache License 2.0](LICENSE).
 
 ## Contact
 We would love to hear from you and receive your feedback! You can reach us through the following channels:
