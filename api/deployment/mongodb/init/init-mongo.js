@@ -13,7 +13,7 @@ db.labs.insertMany([
             image: "ghcr.io/vitor-mauricio/lab-runner-example:dev",
             ports: [3000],
             code_config: {
-                git_url: "github.com/appsec-digital/labs.git",
+                git_url: "github.com/opiasec/labs-vulnapps.git",
                 git_branch: "main",
                 git_path: "lab-example",
             },
@@ -64,9 +64,9 @@ db.labs.insertMany([
             image: "ghcr.io/vitor-mauricio/lab-runner-copy:dev",
             ports: [3000],
             code_config: {
-                git_url: "github.com/appsec-digital/labs.git",
-                git_branch: "main",
-                git_path: "copy-n-paste",
+                git_url: "github.com/globocom/secDevLabs.git",
+                git_branch: "master",
+                git_path: "owasp-top10-2021-apps/a3/copy-n-paste",
             },
             env: {
                 "DOCKER_HOST": "tcp://localhost:2375",

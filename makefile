@@ -31,7 +31,7 @@ deploy: install deploy-front-end
 ## Link Docker Compose network to kind cluster
 link-network:
 	@echo "Linking Docker Compose network..."
-	@docker network connect opiaseclabs_labs-net kind-control-plane
+	@docker network connect labs_labs-net kind-control-plane
 
 ## Stop Docker Compose Containers
 stop:
@@ -46,5 +46,5 @@ help:
 ## Stop and remove all containers, networks, and volumes
 clean:
 	@echo "Stopping and removing Docker containers..."
-	@docker network disconnect opiaseclabs_labs-net kind-control-plane
+	@docker network disconnect labs_labs-net kind-control-plane
 	@docker compose down --volumes --remove-orphans
